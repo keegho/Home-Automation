@@ -1,4 +1,4 @@
-# Home-Automation
+# Home-Automation 
 Playing with some Arduino UNO boards and opening and closing lamps using the iOS app and the Arduino attached relays.
 Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 different pins.
 
@@ -28,13 +28,12 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 Using the terminal go to your project folder.
 Create this podfile: "pod init" ----> "vim podfile"
 
-`platform :ios, '9.0'`
-
-`target 'Karsian Home' do`
-` use_frameworks!`
-` pod 'Alamofire', '~> 4.0'`
-` pod 'SwiftyJSON'`
-`end`
+`platform :ios, '9.0'
+ target 'Karsian Home' do
+use_frameworks!
+ pod 'Alamofire', '~> 4.0'
+ pod 'SwiftyJSON'
+end`
 
 2. ESC then save using ":x!" command. Then install the pod file: "pod install"
 
