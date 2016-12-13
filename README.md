@@ -2,6 +2,8 @@
 Playing with some Arduino UNO boards and opening and closing lamps using the iOS app and the Arduino attached relays.
 Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 different pins.
 
+![gif](http://i.imgur.com/5ttBi20.gif)
+
 ## What you will need?
 1. Arduino UNO
 2. Ethernet Sheild
@@ -12,8 +14,6 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 7. 4 Channel 10A Relay (30A is much more powerfull if you need to power up A/C or Heaters)
 8. Resistors (optional)
 9. USB Cable to power up Arduino board
-
-![img](http://i.imgur.com/kmoBsJW.jpg?1)
 
 
 ## Setup Arduino
