@@ -17,11 +17,10 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 
 
 ## Setup Arduino
-1. Go to [Teleduino](https://www.teleduino.org) and make an account and put your secret key in plist file you 
-will create in your project
-called ApiKeys.plist
+1. Go to [Teleduino](https://www.teleduino.org) and make an account and put your secret key in plist file you will create in your project folder "Karsian Home" called in file ApiKeys.plist and the `Key = "TeleduinoKey" Value= "Your Secret Key"`
 2. Download their C++ library and their examples. Use the proxy example and uploaded it to your Arduino.
 3. Make all your wirings from the Arduino to the relays. "Im using digital pins 4,5,6,7"
+4. Don't forget to attach the GND and the VCC of course.
 
 ## Setup Pods
 Using the terminal go to your project folder.
