@@ -13,6 +13,7 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 8. Resistors (optional)
 9. USB Cable to power up Arduino board
 
+![img](http://i.imgur.com/kmoBsJW.jpg?1)
 
 
 ## Setup Arduino
@@ -38,6 +39,8 @@ Create this podfile: "pod init" ----> "vim podfile"
 2. ESC then save using ":x!" command. Then install the pod file: "pod install"
 
 3. Open the `.xworkspace` extenstion and play the code.
+
+![img](http://i.imgur.com/UsdzSb4.png)
 
 
 
