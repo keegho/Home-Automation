@@ -17,23 +17,22 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 
 
 ## Setup Arduino
-1. Go to [Teleduino](https://www.teleduino.org) and make an account and put your secret key in plist file you 
-will create in your project
-called ApiKeys.plist
-2. Download their C++ library and their examples. Use the proxy example and uploaded it to your Arduino.
+1. Go to [Teleduino](https://www.teleduino.org) and make an account and put your secret key in plist file you will create in your project folder "Karsian Home" called in file ApiKeys.plist and the `Key = "TeleduinoKey" Value= "Your Secret Key"`
+2. Download their C++ library and their examples. Use the proxy example and upload it to your Arduino.
 3. Make all your wirings from the Arduino to the relays. "Im using digital pins 4,5,6,7"
+4. Don't forget to attach the GND and the VCC.
 
-## Setup Pods
+## Setup Pods on mac
 Using the terminal go to your project folder.
 Create this podfile: "pod init" ----> "vim podfile"
 
- `platform :ios, '9.0'`
+`platform :ios, '9.0'`
 
 `target 'Karsian Home' do`
- ` use_frameworks!`
- ` pod 'Alamofire', '~> 4.0'`
- ` pod 'SwiftyJSON'`
- ` pod 'SwiftSpinner'`
+` use_frameworks!`
+` pod 'Alamofire', '~> 4.0'`
+` pod 'SwiftyJSON'`
+` pod 'SwiftSpinner'`
 `end`
 
 2. ESC then save using ":x!" command. Then install the pod file: "pod install"
