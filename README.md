@@ -2,7 +2,7 @@
 Playing with some Arduino UNO boards and opening and closing lamps using the iOS app and the Arduino attached relays.
 Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 different pins.
 
-![gif](http://i.imgur.com/5ttBi20.gif)
+![gif](https://github.com/keegho/Home-Automation/blob/master/automationIoT.gif)
 
 ## What you will need?
 1. Arduino UNO
