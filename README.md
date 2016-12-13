@@ -15,6 +15,8 @@ Im using Arduino UNO with ethernet sheild that is connected to 4 relays on 4 dif
 8. Resistors (optional)
 9. USB Cable to power up Arduino board
 
+![img](http://i.imgur.com/KHfbAdl.jpg?1)
+
 
 ## Setup Arduino
 1. Go to [Teleduino](https://www.teleduino.org) and make an account and put your secret key in plist file you will create in your project folder "Karsian Home" called in file ApiKeys.plist and the `Key = "TeleduinoKey" Value= "Your Secret Key"`
