@@ -32,7 +32,6 @@ Create this podfile: "pod init" ----> "vim podfile"
 ` use_frameworks!`
 ` pod 'Alamofire', '~> 4.0'`
 ` pod 'SwiftyJSON'`
-` pod 'SwiftSpinner'`
 `end`
 
 2. ESC then save using ":x!" command. Then install the pod file: "pod install"
