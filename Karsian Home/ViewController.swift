@@ -9,10 +9,10 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-import SwiftSpinner
 
 class ViewController: UIViewController {
     
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     @IBOutlet var button1: UIButton!
     @IBOutlet var button2: UIButton!
     @IBOutlet var button3: UIButton!
@@ -32,8 +32,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.center = view.center
+        
         initializeApp(pin: [7,6,5,4], mode: 1)
-
+        
         
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -70,7 +73,8 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
-       // SwiftSpinner.show("Loading...", animated: true)
+        activityIndicator.startAnimating()
+        
         getAllInputValues(key: key, method: .post) { (status, values, msg) in
             
             if status == 200 {
@@ -96,13 +100,14 @@ class ViewController: UIViewController {
                 }
                 self.button4.isEnabled = true; self.button3.isEnabled = true; self.button2.isEnabled = true; self.button1.isEnabled = true
             } else {
-               //   SwiftSpinner.show(duration: 2.0, title: "Error")
+                
                 print("Error getting pin values")
                 return
             }
+            self.activityIndicator.stopAnimating()
         }
-      //  SwiftSpinner.hide()
-
+        
+        // Show buttons in animation
         UIView.animate(withDuration: 2.0) {
             
             self.button1.alpha = 1; self.button2.alpha = 1; self.button3.alpha = 1; self.button4.alpha = 1
@@ -111,7 +116,7 @@ class ViewController: UIViewController {
     
     func callTelduino(pin:Int, toggle:Int, key:String, sender:UIButton, method:HTTPMethod) {
         
-        
+        activityIndicator.startAnimating()
         setDigitalURL = URL(string: "https://us01.proxy.teleduino.org/api/1.0/328.php?k=\(key)&r=setDigitalOutput&pin=\(pin)&output=\(toggle)&expire_time=0&save=1")
         
         Alamofire.request(setDigitalURL, method: method, parameters: [:], encoding: JSONEncoding.default, headers: [:])
@@ -120,11 +125,13 @@ class ViewController: UIViewController {
                 switch response.result{
                 case .success( _):
                     //   print("Success \(data)")
+                    self.activityIndicator.stopAnimating()
                     if sender.backgroundColor == UIColor.red {
                         sender.backgroundColor = UIColor.green
                     } else {
                         sender.backgroundColor = UIColor.red
                     }
+                    
                 case .failure(let err):
                     print("Error: \(err)")
                     self.alertMessage(title: "Connection Error", message: "Failed in sending request")
@@ -168,12 +175,11 @@ class ViewController: UIViewController {
     
     func initializeApp(pin: [Int], mode: Int) {
         
-       
         
+        activityIndicator.startAnimating()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         key = appDelegate.key
-        //SwiftSpinner.useContainerView()
-       // SwiftSpinner.show("Loading...", animated: true)
+        
         
         button1.alpha = 0; button2.alpha = 0; button3.alpha = 0; button4.alpha = 0
         button4.isEnabled = false; button3.isEnabled = false; button2.isEnabled = false; button1.isEnabled = false
@@ -187,7 +193,7 @@ class ViewController: UIViewController {
         button4.layer.cornerRadius = self.button1.frame.width/2
         
         for i in pin {
-
+            
             definePinModeURL = URL(string: "https://us01.proxy.teleduino.org/api/1.0/328.php?k=\(key!)&r=definePinMode&pin=\(i)&mode=\(mode)")
             
             Alamofire.request(definePinModeURL, method: .post, parameters: [:], encoding: JSONEncoding.default, headers: [:])
@@ -196,6 +202,7 @@ class ViewController: UIViewController {
                     switch response.result {
                     case .success(_):
                         print("Success initialization")
+                        
                     case .failure(let err):
                         // SwiftSpinner.show(duration: 2.0, title: "Connection Error")
                         print("Error initialization: \(err)")
@@ -204,6 +211,7 @@ class ViewController: UIViewController {
                     }
             }
         }
+        activityIndicator.stopAnimating()
         
     }
     
@@ -214,13 +222,13 @@ class ViewController: UIViewController {
         let action = UIAlertAction(title: "Cancel", style: .default) { (action) in
             alert.dismiss(animated: true, completion: nil)
         }
-
-        alert.addAction(action)
-
         
+        alert.addAction(action)
+        
+        self.activityIndicator.stopAnimating()
         self.present(alert, animated: true, completion: nil)
     }
-
+    
     
     
     

@@ -8,5 +8,4 @@ target 'Karsian Home' do
   # Pods for Karsian Home
   pod 'Alamofire', '~> 4.0'
   pod 'SwiftyJSON'
-  pod 'SwiftSpinner'
 end
