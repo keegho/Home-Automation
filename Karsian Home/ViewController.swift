@@ -32,10 +32,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+       NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        
         activityIndicator.hidesWhenStopped = true
         activityIndicator.center = view.center
         
-        initializeApp(pin: [7,6,5,4], mode: 1)
+        initializeAppView()
         
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -71,48 +73,31 @@ class ViewController: UIViewController {
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    func didBecomeActive() {
         
         activityIndicator.startAnimating()
         
-        getAllInputValues(key: key, method: .post) { (status, values, msg) in
+        definingPinModes(pin: [7,6,5,4], mode: 1)
+        
+        getAllInputValues(key: key, method: .post) { (status, newValues, msg) in
             
             if status == 200 {
-                if values?[4] == 0 {
-                    self.button1.backgroundColor = UIColor.red
-                } else {
-                    self.button1.backgroundColor = UIColor.green
-                }
-                if values?[5] == 0 {
-                    self.button2.backgroundColor = UIColor.red
-                } else {
-                    self.button2.backgroundColor = UIColor.green
-                }
-                if values?[6] == 0 {
-                    self.button3.backgroundColor = UIColor.red
-                } else {
-                    self.button3.backgroundColor = UIColor.green
-                }
-                if values?[7] == 0 {
-                    self.button4.backgroundColor = UIColor.red
-                } else {
-                    self.button4.backgroundColor = UIColor.green
-                }
-                self.button4.isEnabled = true; self.button3.isEnabled = true; self.button2.isEnabled = true; self.button1.isEnabled = true
+                
+                //Change button colors according to values in array
+                self.changeButtonColors(values: newValues!)
+                
             } else {
                 
                 print("Error getting pin values")
+                
+                self.alertMessage(title: "Connection Error", message: "Failed retrieving pin values")
                 return
             }
             self.activityIndicator.stopAnimating()
         }
-        
-        // Show buttons in animation
-        UIView.animate(withDuration: 2.0) {
-            
-            self.button1.alpha = 1; self.button2.alpha = 1; self.button3.alpha = 1; self.button4.alpha = 1
-        }
+
     }
+    
     
     func callTelduino(pin:Int, toggle:Int, key:String, sender:UIButton, method:HTTPMethod) {
         
@@ -166,31 +151,15 @@ class ViewController: UIViewController {
                 case .failure(let err):
                     print("Error: \(err)")
                     completion(500, nil, "Failed")
-                    //sender.backgroundColor = UIColor.red
                     
                 }
             })
         
     }
     
-    func initializeApp(pin: [Int], mode: Int) {
+    // Defining which pins are for output and which for input
+    func definingPinModes(pin: [Int], mode: Int) {
         
-        
-        activityIndicator.startAnimating()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        key = appDelegate.key
-        
-        
-        button1.alpha = 0; button2.alpha = 0; button3.alpha = 0; button4.alpha = 0
-        button4.isEnabled = false; button3.isEnabled = false; button2.isEnabled = false; button1.isEnabled = false
-        button1.backgroundColor = UIColor.red
-        button2.backgroundColor = UIColor.red
-        button3.backgroundColor = UIColor.red
-        button4.backgroundColor = UIColor.red
-        button1.layer.cornerRadius = self.button1.frame.width/2
-        button2.layer.cornerRadius = self.button1.frame.width/2
-        button3.layer.cornerRadius = self.button1.frame.width/2
-        button4.layer.cornerRadius = self.button1.frame.width/2
         
         for i in pin {
             
@@ -206,27 +175,85 @@ class ViewController: UIViewController {
                     case .failure(let err):
                         // SwiftSpinner.show(duration: 2.0, title: "Connection Error")
                         print("Error initialization: \(err)")
-                        self.alertMessage(title: "Connection Error", message: "Failed to initialize app")
+
+                       // self.alertMessage(title: "Connection Error", message: "Failed to initialize app")
+
                         return
                     }
             }
         }
-        activityIndicator.stopAnimating()
         
+    }
+    
+    func initializeAppView() {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        key = appDelegate.key
+        
+        
+        button1.alpha = 0; button2.alpha = 0; button3.alpha = 0; button4.alpha = 0
+        button4.isEnabled = false; button3.isEnabled = false; button2.isEnabled = false; button1.isEnabled = false
+        button1.backgroundColor = UIColor.red
+        button2.backgroundColor = UIColor.red
+        button3.backgroundColor = UIColor.red
+        button4.backgroundColor = UIColor.red
+        button1.layer.cornerRadius = self.button1.frame.width/2
+        button2.layer.cornerRadius = self.button1.frame.width/2
+        button3.layer.cornerRadius = self.button1.frame.width/2
+        button4.layer.cornerRadius = self.button1.frame.width/2
+        
+        // Show buttons in animation
+        UIView.animate(withDuration: 2.0) {
+            
+            self.button1.alpha = 1; self.button2.alpha = 1; self.button3.alpha = 1; self.button4.alpha = 1
+        }
+        
+    }
+    
+    func changeButtonColors(values: [Int]) {
+        
+        if values[4] == 0 {
+            self.button1.backgroundColor = UIColor.red
+        } else {
+            self.button1.backgroundColor = UIColor.green
+        }
+        if values[5] == 0 {
+            self.button2.backgroundColor = UIColor.red
+        } else {
+            self.button2.backgroundColor = UIColor.green
+        }
+        if values[6] == 0 {
+            self.button3.backgroundColor = UIColor.red
+        } else {
+            self.button3.backgroundColor = UIColor.green
+        }
+        if values[7] == 0 {
+            self.button4.backgroundColor = UIColor.red
+        } else {
+            self.button4.backgroundColor = UIColor.green
+        }
+        self.button4.isEnabled = true; self.button3.isEnabled = true; self.button2.isEnabled = true; self.button1.isEnabled = true
     }
     
     //Alert error messages
     func alertMessage(title:String, message:String) {
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let action = UIAlertAction(title: "Cancel", style: .default) { (action) in
+        let action = UIAlertAction(title: "Ok", style: .default) { (action) in
             alert.dismiss(animated: true, completion: nil)
         }
         
         alert.addAction(action)
         
         self.activityIndicator.stopAnimating()
-        self.present(alert, animated: true, completion: nil)
+        
+        if presentedViewController == nil {
+            self.present(alert, animated: true, completion: nil)
+        }else {
+            self.dismiss(animated: false, completion: {
+                self.present(alert, animated: true, completion: nil)
+            })
+        }
     }
     
     
