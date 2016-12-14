@@ -9,6 +9,11 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import SystemConfiguration
+
+protocol Utilities {
+    
+}
 
 class ViewController: UIViewController {
     
@@ -73,27 +78,34 @@ class ViewController: UIViewController {
         
     }
     
+    //Observer function fires when app loads
     func didBecomeActive() {
         
-        activityIndicator.startAnimating()
-        
-        definingPinModes(pin: [7,6,5,4], mode: 1)
-        
-        getAllInputValues(key: key, method: .post) { (status, newValues, msg) in
+        //Check if phone has internet connection and is not on flight mode.
+        if currentReachabilityStatus == ReachabilityStatus.notReachable {
+            alertMessage(title: "Connection Error", message: "No connection found. Please check your phone connection status.")
+            return
             
-            if status == 200 {
+        } else {
+            
+            activityIndicator.startAnimating()
+            
+            getAllInputValues(key: key, method: .post) { (status, newValues, msg) in
                 
-                //Change button colors according to values in array
-                self.changeButtonColors(values: newValues!)
-                
-            } else {
-                
-                print("Error getting pin values")
-                
-                self.alertMessage(title: "Connection Error", message: "Failed retrieving pin values")
-                return
+                if status == 200 {
+                    
+                    //Change button colors according to values in array
+                    self.changeButtonColors(values: newValues!)
+                    
+                } else {
+                    
+                    print("Error getting pin values")
+                    
+                    self.alertMessage(title: "Connection Error", message: "Failed retrieving pin values")
+                    return
+                }
+                self.activityIndicator.stopAnimating()
             }
-            self.activityIndicator.stopAnimating()
         }
 
     }
@@ -137,13 +149,13 @@ class ViewController: UIViewController {
             .responseJSON(completionHandler: { (response) in
                 switch response.result{
                 case .success(let data):
-                    print("Success \(data)")
+                    //print("Success \(data)")
                     // print(data)
                     let json = JSON(data)
                     for (_ ,subJson):(String, JSON) in json {
                         //    print(subJson)
                         for values in subJson["values"].arrayValue {
-                            print(values)
+                          //  print(values)
                             theValues.append(values.int!)
                         }
                     }
@@ -170,7 +182,7 @@ class ViewController: UIViewController {
                 .responseJSON { (response) in
                     switch response.result {
                     case .success(_):
-                        print("Success initialization")
+                        print("Success pin definition")
                         
                     case .failure(let err):
                         // SwiftSpinner.show(duration: 2.0, title: "Connection Error")
@@ -186,6 +198,8 @@ class ViewController: UIViewController {
     }
     
     func initializeAppView() {
+        
+        //print(currentReachabilityStatus)
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         key = appDelegate.key
@@ -207,6 +221,8 @@ class ViewController: UIViewController {
             
             self.button1.alpha = 1; self.button2.alpha = 1; self.button3.alpha = 1; self.button4.alpha = 1
         }
+        
+        definingPinModes(pin: [7,6,5,4], mode: 1)
         
     }
     
@@ -256,8 +272,58 @@ class ViewController: UIViewController {
         }
     }
     
+
     
+}
+
+// Checking reachability status using SCNetworkReachabilityFlags
+extension NSObject:Utilities {
     
+    enum ReachabilityStatus {
+        case notReachable
+        case reachableViaWWAN
+        case reachableViaWiFi
+    }
     
+    var currentReachabilityStatus: ReachabilityStatus {
+        
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return .notReachable
+        }
+        
+        var flags: SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return .notReachable
+        }
+        
+        if flags.contains(.reachable) == false {
+            // The target host is not reachable.
+            return .notReachable
+        }
+        else if flags.contains(.isWWAN) == true {
+            // WWAN connections are OK if the calling application is using the CFNetwork APIs.
+            return .reachableViaWWAN
+        }
+        else if flags.contains(.connectionRequired) == false {
+            // If the target host is reachable and no connection is required then we'll assume that you're on Wi-Fi...
+            return .reachableViaWiFi
+        }
+        else if (flags.contains(.connectionOnDemand) == true || flags.contains(.connectionOnTraffic) == true) && flags.contains(.interventionRequired) == false {
+            // The connection is on-demand (or on-traffic) if the calling application is using the CFSocketStream or higher APIs and no [user] intervention is needed
+            return .reachableViaWiFi
+        }
+        else {
+            return .notReachable
+        }
+    }
+
 }
 
