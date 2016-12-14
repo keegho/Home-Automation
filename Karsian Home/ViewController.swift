@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import SystemConfiguration
+import AVFoundation
 
 protocol Utilities {
     
@@ -22,6 +23,8 @@ class ViewController: UIViewController {
     @IBOutlet var button2: UIButton!
     @IBOutlet var button3: UIButton!
     @IBOutlet var button4: UIButton!
+    
+    var audio: AVAudioPlayer!
     
     var key: String!
     
@@ -42,6 +45,7 @@ class ViewController: UIViewController {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.center = view.center
         
+        initializeSoundPlayer()
         initializeAppView()
         
         
@@ -54,26 +58,55 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    //Initializing the audio player
+    func initializeSoundPlayer() {
+        
+        guard let fileURL = Bundle.main.url(forResource: "Click2", withExtension: "mp3") else {
+            
+            print("Cannot find file")
+            
+            return
+        }
+        
+        do {
+            audio = AVAudioPlayer()
+            try audio = AVAudioPlayer(contentsOf: fileURL)
+            audio.volume = 0.7
+            
+        } catch {
+            print("Error loading music file")
+        }
+    }
+    
+    func tickSound() {
+        
+        if audio != nil {
+            
+            audio.play()
+        }
+    }
+    
     @IBAction func button1Tapped(_ sender: UIButton) {
         
+        tickSound()
         callTelduino(pin: pin.0, toggle: toggle.2, key: key, sender: sender, method: .post) //4
         
     }
     @IBAction func button2Tapped(_ sender: UIButton) {
         
-        
+        tickSound()
         callTelduino(pin: pin.1, toggle: toggle.2, key: key, sender: sender, method: .post) //5
     }
     
     @IBAction func button3Tapped(_ sender: UIButton) {
         
-        
+        tickSound()
         callTelduino(pin: pin.2, toggle: toggle.2, key: key, sender: sender, method: .post) //6
         
     }
     @IBAction func button4Tapped(_ sender: UIButton) {
         
-        
+        tickSound()
         callTelduino(pin: pin.3, toggle: toggle.2, key: key, sender: sender, method: .post) //7
         
     }
@@ -84,6 +117,7 @@ class ViewController: UIViewController {
         //Check if phone has internet connection and is not on flight mode.
         if currentReachabilityStatus == ReachabilityStatus.notReachable {
             alertMessage(title: "Connection Error", message: "No connection found. Please check your phone connection status.")
+                    button4.isEnabled = false; button3.isEnabled = false; button2.isEnabled = false; button1.isEnabled = false
             return
             
         } else {
