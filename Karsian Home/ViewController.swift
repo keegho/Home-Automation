@@ -86,30 +86,30 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func button1Tapped(_ sender: UIButton) {
-        
-        tickSound()
-        callTelduino(pin: pin.0, toggle: toggle.2, key: key, sender: sender, method: .post) //4
-        
-    }
-    @IBAction func button2Tapped(_ sender: UIButton) {
-        
-        tickSound()
-        callTelduino(pin: pin.1, toggle: toggle.2, key: key, sender: sender, method: .post) //5
-    }
     
-    @IBAction func button3Tapped(_ sender: UIButton) {
+    @IBAction func buttonTapped(_ sender: UIButton) {
         
-        tickSound()
-        callTelduino(pin: pin.2, toggle: toggle.2, key: key, sender: sender, method: .post) //6
-        
+        //Identifying button tapped from its tag number
+        switch sender.tag {
+            
+        case 0:
+            tickSound()
+            callTelduino(pin: pin.0, toggle: toggle.2, key: key, sender: sender, method: .post) //4
+        case 1:
+            tickSound()
+            callTelduino(pin: pin.1, toggle: toggle.2, key: key, sender: sender, method: .post) //5
+        case 2:
+            tickSound()
+            callTelduino(pin: pin.2, toggle: toggle.2, key: key, sender: sender, method: .post) //6
+        case 3:
+            tickSound()
+            callTelduino(pin: pin.3, toggle: toggle.2, key: key, sender: sender, method: .post) //7
+        default:
+            return
+
+        }
     }
-    @IBAction func button4Tapped(_ sender: UIButton) {
-        
-        tickSound()
-        callTelduino(pin: pin.3, toggle: toggle.2, key: key, sender: sender, method: .post) //7
-        
-    }
+
     
     //Observer function fires when app loads
     func didBecomeActive() {
